@@ -1,4 +1,4 @@
-package com.example.universityclubsofkenya.ui
+package com.example.universityclubsofkenya.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.ui.theme.Typography
-import com.example.universityclubsofkenya.ui.theme.UniversityClubsOfKenyaTheme
 
 @Composable
 fun Home(onStudentNavigationClicked: () -> Unit,
@@ -145,7 +142,6 @@ fun Expert(onExpertButtonClicked: () -> Unit, modifier: Modifier = Modifier){
         Text(text = "Clubs can best facilitate the necessary connections needed for the students to engage with the industries at large in the course of their study.",
             style = Typography.bodyMedium)
         Spacer(modifier = modifier.padding(5.dp))
-
     }
 }
 

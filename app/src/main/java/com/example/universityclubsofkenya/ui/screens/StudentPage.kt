@@ -1,7 +1,6 @@
-package com.example.universityclubsofkenya.ui
+package com.example.universityclubsofkenya.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -68,7 +68,13 @@ fun StudentBusinessRelations(modifier: Modifier = Modifier){
                         HorizontalDivider()
                     }
                     LinearProgressIndicator(progress = { currentProgress })
-                    Text(text = "Participant")
+                    Row {
+                        Text(text = "Participant")
+                        TextButton(onClick = { /*TODO*/ }) {
+                            Text(text = "Courses")
+                        }
+                    }
+                    
                 }
                 Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
                     Image(painter = painterResource(R.drawable.friend),
@@ -155,7 +161,8 @@ fun StudentSchedules(modifier: Modifier = Modifier){
         Card {
 
             Column(modifier = modifier
-                .fillMaxWidth().verticalScroll(scrollState)) {
+                .fillMaxWidth()
+                .verticalScroll(scrollState)) {
                 Text(text ="SCHEDULES: ")
                 Spacer(modifier = modifier.padding(10.dp))
                 Text(text = "24/01/2024: Funding")

@@ -1,11 +1,18 @@
 package com.example.universityclubsofkenya.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.universityclubsofkenya.ui.reusables.SignInAccount
+import com.example.universityclubsofkenya.ui.screens.Business
+import com.example.universityclubsofkenya.ui.screens.Home
+import com.example.universityclubsofkenya.ui.screens.StudentDomain
+import com.example.universityclubsofkenya.ui.screens.TeacherDomain
+import com.example.universityclubsofkenya.ui.viewModels.AuthenticationViewModel
 
 interface ClubDestinations{
     val route: String
@@ -31,13 +38,18 @@ object Student: ClubDestinations{
         get() = "student"
 }
 
+object SignIn: ClubDestinations{
+    override val route: String
+        get() = "sign-in"
+}
+
 object Teacher: ClubDestinations{
     override val route: String
         get() = "teacher"
 }
 
 @Composable
-fun ClubApp(modifier: Modifier = Modifier) {
+fun ClubApp(modifier: Modifier = Modifier, authenticationViewModel: AuthenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory) ){
     val navController = rememberNavController()
 
     NavHost(
@@ -45,7 +57,7 @@ fun ClubApp(modifier: Modifier = Modifier) {
         startDestination = Home.route
     ){
         composable(route = Home.route){
-            Home(onStudentNavigationClicked = {navController.navigate(Student.route)},
+            Home(onStudentNavigationClicked = {navController.navigate(SignIn.route)},
                 onPatronNavigationClicked = {navController.navigate(Teacher.route)},
                 onExpertNavigationClicked = {navController.navigate(Business.route)})
         }
@@ -57,6 +69,23 @@ fun ClubApp(modifier: Modifier = Modifier) {
         }
         composable(route = Business.route){
             Business()
+        }
+        composable(route = SignIn.route){
+            if (authenticationViewModel.signInPost){
+                LaunchedEffect(authenticationViewModel) {
+                    authenticationViewModel.usersResult = authenticationViewModel.postUser().await()
+                }
+                navController.navigate(Student.route)
+                authenticationViewModel.signInPost = false
+            }
+            SignInAccount(
+                username = authenticationViewModel.username,
+                onUsernameChanged = {authenticationViewModel.updateUsernameChanged(it)},
+                password = authenticationViewModel.password,
+                onPasswordChanged = {authenticationViewModel.updatePasswordChanged(it)},
+                onUsersStateChanged = {authenticationViewModel.signInPost = it},
+                userDetails = authenticationViewModel.signInPost
+            )
         }
     }
 
