@@ -2,6 +2,8 @@ package com.example.universityclubsofkenya.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -57,15 +59,24 @@ fun ClubApp(modifier: Modifier = Modifier, authenticationViewModel: Authenticati
         startDestination = Home.route
     ){
         composable(route = Home.route){
+            if (authenticationViewModel.teachersPage){
+                LaunchedEffect(authenticationViewModel) {
+                    authenticationViewModel.updateTeacherResourceChanged(authenticationViewModel.getTeachersResource().await())
+                    navController.navigate(Teacher.route)
+                    authenticationViewModel.teachersPage = false
+                }
+            }
             Home(onStudentNavigationClicked = {navController.navigate(SignIn.route)},
-                onPatronNavigationClicked = {navController.navigate(Teacher.route)},
+                onPatronNavigationClicked = { authenticationViewModel.teachersPage = it },
+                teacherPageState = authenticationViewModel.teachersPage,
                 onExpertNavigationClicked = {navController.navigate(Business.route)})
         }
         composable(route = Student.route){
             StudentDomain()
         }
         composable(route = Teacher.route){
-            TeacherDomain()
+            val authUiState by authenticationViewModel.uiState.collectAsState()
+            TeacherDomain(authUiState)
         }
         composable(route = Business.route){
             Business()

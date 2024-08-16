@@ -28,21 +28,22 @@ import androidx.compose.ui.unit.dp
 import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.ui.reusables.Portal
 import com.example.universityclubsofkenya.ui.theme.UniversityClubsOfKenyaTheme
+import com.example.universityclubsofkenya.ui.viewModels.uiStates.AuthUiState
 
 @Composable
-fun TeacherDomain(modifier: Modifier = Modifier){
+fun TeacherDomain(companyTrial: AuthUiState, modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
     Column (modifier = modifier
         .padding(vertical = 20.dp)
         .verticalScroll(scrollState)){
         Portal()
-        TeacherBusinessRelations()
+        TeacherBusinessRelations(companyTrial)
         CalendarSystem()
     }
 }
 
 @Composable
-fun TeacherBusinessRelations(modifier: Modifier = Modifier){
+fun TeacherBusinessRelations(companyTrial: AuthUiState, modifier: Modifier = Modifier){
     Column(modifier = modifier.padding(vertical = 10.dp, horizontal = 10.dp)){
         Row(modifier = modifier
             .fillMaxWidth()
@@ -57,7 +58,7 @@ fun TeacherBusinessRelations(modifier: Modifier = Modifier){
                 Column (modifier = modifier
                     .padding(10.dp)){
                     Column{
-                        Text(text = "SAFARICOM")
+                        Text(text = companyTrial.currentCompanyName)
                     }
                     Text(text = "Tests: 5")
                 }
@@ -223,10 +224,11 @@ fun TeachersSchedule(modifier: Modifier = Modifier){
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun TeacherPagePreview() {
     UniversityClubsOfKenyaTheme {
         TeacherDomain()
     }
-}
+}*/

@@ -3,6 +3,7 @@ package com.example.universityclubsofkenya.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,7 +26,8 @@ import com.example.universityclubsofkenya.ui.theme.Typography
 
 @Composable
 fun Home(onStudentNavigationClicked: () -> Unit,
-         onPatronNavigationClicked: () -> Unit,
+         onPatronNavigationClicked: (Boolean) -> Unit,
+         teacherPageState: Boolean,
          onExpertNavigationClicked: () -> Unit,
          modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
@@ -33,7 +35,7 @@ fun Home(onStudentNavigationClicked: () -> Unit,
     Column(modifier = modifier.verticalScroll(scrollState)) {
         AppTitle()
         Student(onStudentButtonClicked = onStudentNavigationClicked)
-        Patron(onPatronButtonClicked = onPatronNavigationClicked)
+        Patron(onPatronButtonClicked = onPatronNavigationClicked, teacherPageState = teacherPageState)
         Expert(onExpertButtonClicked = onExpertNavigationClicked)
     }
 }
@@ -70,9 +72,13 @@ fun Student(onStudentButtonClicked: () -> Unit, modifier: Modifier = Modifier){
     Column(modifier = modifier
         .fillMaxWidth()
         .padding(vertical = 10.dp, horizontal = 20.dp)){
-        Button(onClick = onStudentButtonClicked ) {
-            Text(text = "Student Member")
+        Row{
+            Button(onClick = onStudentButtonClicked ) {
+                Text(text = "Student Member")
+            }
+            Image(painter = painterResource(id = R.drawable.addition), contentDescription = "addition", modifier= modifier.padding(5.dp).size(25.dp))
         }
+
         Image(painter = painterResource(id = R.drawable.student_club1),
             contentDescription = "Student Clubs",
             contentScale = ContentScale.Crop,
@@ -93,13 +99,17 @@ fun Student(onStudentButtonClicked: () -> Unit, modifier: Modifier = Modifier){
 }
 
 @Composable
-fun Patron(onPatronButtonClicked: () -> Unit, modifier: Modifier = Modifier){
+fun Patron(onPatronButtonClicked: (Boolean) -> Unit, teacherPageState: Boolean, modifier: Modifier = Modifier){
     Column(modifier = modifier
         .fillMaxWidth()
         .padding(vertical = 10.dp, horizontal = 20.dp)){
-        Button(onClick = onPatronButtonClicked) {
-            Text(text = "Lecturer Patron")
+        Row {
+            Button(onClick = {onPatronButtonClicked(!teacherPageState)}) {
+                Text(text = "Lecturer Patron")
+            }
+            Image(painter = painterResource(id = R.drawable.addition), contentDescription = "addition", modifier= modifier.padding(5.dp).size(25.dp))
         }
+
         Image(painter = painterResource(id = R.drawable.teacher_club1),
             contentDescription = "Patron Clubs",
             contentScale = ContentScale.Crop,
@@ -124,8 +134,11 @@ fun Expert(onExpertButtonClicked: () -> Unit, modifier: Modifier = Modifier){
     Column(modifier = modifier
         .fillMaxWidth()
         .padding(vertical = 10.dp, horizontal = 20.dp)){
-        Button(onClick = onExpertButtonClicked) {
-            Text(text = "Industry Expert")
+        Row {
+            Button(onClick = onExpertButtonClicked) {
+                Text(text = "Industry Expert")
+            }
+            Image(painter = painterResource(id = R.drawable.addition), contentDescription = "addition", modifier= modifier.padding(5.dp).size(25.dp))
         }
         Image(painter = painterResource(id = R.drawable.business_club1),
             contentDescription = "Expert Clubs",

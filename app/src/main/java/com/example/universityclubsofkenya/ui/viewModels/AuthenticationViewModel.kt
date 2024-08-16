@@ -9,18 +9,32 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.universityclubsofkenya.UniversityClubsApplication
-import com.example.universityclubsofkenya.data.models.Usersz
-import com.example.universityclubsofkenya.data.repositories.UserszRepository
+import com.example.universityclubsofkenya.data.models.TeacherResource
+import com.example.universityclubsofkenya.data.models.Users
+import com.example.universityclubsofkenya.data.repositories.UsersRepository
+import com.example.universityclubsofkenya.ui.viewModels.uiStates.AuthUiState
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-class AuthenticationViewModel(private val usersRepository: UserszRepository): ViewModel() {
+class AuthenticationViewModel(private val usersRepository: UsersRepository): ViewModel() {
+
+    private val _uiState = MutableStateFlow(AuthUiState())
+    val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
 
     var username by mutableStateOf("")
     var password by mutableStateOf("")
 
+    var res = TeacherResource("")
+
+
     var signInPost by mutableStateOf(false)
+    var teachersPage by mutableStateOf(false)
+
 
     fun updateUsernameChanged(user: String){
         username = user
@@ -29,15 +43,26 @@ class AuthenticationViewModel(private val usersRepository: UserszRepository): Vi
         password = pass
     }
 
-    var usersResult = Usersz(null,"", "", false)
+    fun updateTeacherResourceChanged(res: TeacherResource){
+        _uiState.value = AuthUiState(currentCompanyName = res.companyName)
+    }
 
-    suspend fun postUser(): Deferred<Usersz> = coroutineScope {
-        val newUsers = Usersz(null, username, password, true)
+    var usersResult = Users("", "", false)
+
+    suspend fun postUser(): Deferred<Users> = coroutineScope {
+        val newUsers = Users( username, password, true)
 
         viewModelScope.async {
             usersRepository.getUsers(newUsers)
         }
     }
+
+    suspend fun getTeachersResource(): Deferred<TeacherResource> = coroutineScope {
+        viewModelScope.async {
+            usersRepository.getTeachersResource()
+        }
+    }
+
     companion object{
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
