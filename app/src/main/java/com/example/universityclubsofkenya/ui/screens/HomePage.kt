@@ -28,7 +28,8 @@ import com.example.universityclubsofkenya.ui.theme.Typography
 fun Home(onStudentNavigationClicked: () -> Unit,
          onPatronNavigationClicked: (Boolean) -> Unit,
          teacherPageState: Boolean,
-         onExpertNavigationClicked: () -> Unit,
+         expertPageState: Boolean,
+         onExpertNavigationClicked: (Boolean) -> Unit,
          modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
     
@@ -36,7 +37,7 @@ fun Home(onStudentNavigationClicked: () -> Unit,
         AppTitle()
         Student(onStudentButtonClicked = onStudentNavigationClicked)
         Patron(onPatronButtonClicked = onPatronNavigationClicked, teacherPageState = teacherPageState)
-        Expert(onExpertButtonClicked = onExpertNavigationClicked)
+        Expert(onExpertButtonClicked = onExpertNavigationClicked, expertPageState = expertPageState)
     }
 }
 
@@ -130,12 +131,12 @@ fun Patron(onPatronButtonClicked: (Boolean) -> Unit, teacherPageState: Boolean, 
 }
 
 @Composable
-fun Expert(onExpertButtonClicked: () -> Unit, modifier: Modifier = Modifier){
+fun Expert(onExpertButtonClicked: (Boolean) -> Unit, expertPageState: Boolean, modifier: Modifier = Modifier){
     Column(modifier = modifier
         .fillMaxWidth()
         .padding(vertical = 10.dp, horizontal = 20.dp)){
         Row {
-            Button(onClick = onExpertButtonClicked) {
+            Button(onClick = {onExpertButtonClicked(!expertPageState)}) {
                 Text(text = "Industry Expert")
             }
             Image(painter = painterResource(id = R.drawable.addition), contentDescription = "addition", modifier= modifier.padding(5.dp).size(25.dp))

@@ -15,6 +15,7 @@ import com.example.universityclubsofkenya.ui.screens.Home
 import com.example.universityclubsofkenya.ui.screens.StudentDomain
 import com.example.universityclubsofkenya.ui.screens.TeacherDomain
 import com.example.universityclubsofkenya.ui.viewModels.AuthenticationViewModel
+import com.example.universityclubsofkenya.ui.viewModels.ExpertViewModel
 
 interface ClubDestinations{
     val route: String
@@ -50,8 +51,11 @@ object Teacher: ClubDestinations{
         get() = "teacher"
 }
 
+
 @Composable
-fun ClubApp(modifier: Modifier = Modifier, authenticationViewModel: AuthenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory) ){
+fun ClubApp(modifier: Modifier = Modifier,
+            authenticationViewModel: AuthenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory),
+            expertViewModel: ExpertViewModel = viewModel(factory = ExpertViewModel.Factory)){
     val navController = rememberNavController()
 
     NavHost(
@@ -66,10 +70,20 @@ fun ClubApp(modifier: Modifier = Modifier, authenticationViewModel: Authenticati
                     authenticationViewModel.teachersPage = false
                 }
             }
+
+            if (expertViewModel.expertPageState){
+                LaunchedEffect(expertViewModel) {
+                    expertViewModel.updateChaptersChanged(expertViewModel.getChapters().await())
+                    navController.navigate(Business.route)
+                    expertViewModel.expertPageState = false
+                }
+            }
+
             Home(onStudentNavigationClicked = {navController.navigate(SignIn.route)},
                 onPatronNavigationClicked = { authenticationViewModel.teachersPage = it },
                 teacherPageState = authenticationViewModel.teachersPage,
-                onExpertNavigationClicked = {navController.navigate(Business.route)})
+                expertPageState = expertViewModel.expertPageState,
+                onExpertNavigationClicked = {expertViewModel.expertPageState = it})
         }
         composable(route = Student.route){
             StudentDomain()
@@ -79,7 +93,8 @@ fun ClubApp(modifier: Modifier = Modifier, authenticationViewModel: Authenticati
             TeacherDomain(authUiState)
         }
         composable(route = Business.route){
-            Business()
+            val expertUiState by expertViewModel.uiState.collectAsState()
+            Business(expertUiState.chapters)
         }
         composable(route = SignIn.route){
             if (authenticationViewModel.signInPost){

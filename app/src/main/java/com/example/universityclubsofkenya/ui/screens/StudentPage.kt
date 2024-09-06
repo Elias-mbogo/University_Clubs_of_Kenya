@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
@@ -68,12 +69,12 @@ fun StudentBusinessRelations(modifier: Modifier = Modifier){
                         HorizontalDivider()
                     }
                     LinearProgressIndicator(progress = { currentProgress })
-                    Row {
-                        Text(text = "Participant")
-                        TextButton(onClick = { /*TODO*/ }) {
-                            Text(text = "Courses")
-                        }
+
+                    Text(text = "Participant")
+                    ElevatedButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Courses")
                     }
+
                     
                 }
                 Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
@@ -91,7 +92,7 @@ fun StudentBusinessRelations(modifier: Modifier = Modifier){
             .fillMaxWidth()
             .padding(15.dp)){
             Image(painter = painterResource(R.drawable.kenyaweb),
-                contentDescription = "safaricom",
+                contentDescription = "kenyaweb",
                 contentScale = ContentScale.Crop,
                 modifier = modifier
                     .size(50.dp)
@@ -106,6 +107,9 @@ fun StudentBusinessRelations(modifier: Modifier = Modifier){
                     }
                     LinearProgressIndicator(progress = { currentProgress })
                     Text(text = "Potential")
+                    ElevatedButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Courses")
+                    }
                 }
                 Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
                     Image(painter = painterResource(R.drawable.friend),
@@ -137,6 +141,9 @@ fun StudentBusinessRelations(modifier: Modifier = Modifier){
                     }
                     LinearProgressIndicator(progress = { currentProgress })
                     Text(text = "Participant")
+                    ElevatedButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Courses")
+                    }
                 }
                 Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
                     Image(painter = painterResource(R.drawable.friend),
