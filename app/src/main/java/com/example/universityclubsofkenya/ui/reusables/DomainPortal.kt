@@ -13,10 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.universityclubsofkenya.R
+import com.example.universityclubsofkenya.ui.StudentGroupChat
 
 @Composable
-fun Portal(modifier: Modifier = Modifier){
+fun Portal(navController: NavController, modifier: Modifier = Modifier){
     Row(modifier = modifier
         .fillMaxWidth()
         .padding(15.dp), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -35,7 +37,7 @@ fun Portal(modifier: Modifier = Modifier){
 
         }
 
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = { navController.navigate(StudentGroupChat.route) }) {
             Image(painter = painterResource(id = R.drawable.chat), contentDescription = "chat" )
         }
     }

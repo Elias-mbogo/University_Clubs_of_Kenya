@@ -30,25 +30,27 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.ui.reusables.Portal
 import com.example.universityclubsofkenya.ui.theme.UniversityClubsOfKenyaTheme
 
 
 @Composable
-fun StudentDomain(modifier: Modifier = Modifier){
+fun StudentDomain(navController: NavController, onKenyawebCoursesPageClicked: (Boolean) -> Unit,
+                  kenyawebCoursesPageState: Boolean, modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
     Column (modifier = modifier
         .padding(vertical = 20.dp)
         .verticalScroll(scrollState)){
-        Portal()
-        StudentBusinessRelations()
+        Portal(navController)
+        StudentBusinessRelations(onKenyawebCoursesPageClicked, kenyawebCoursesPageState)
         StudentSchedules()
     }
 }
 
 @Composable
-fun StudentBusinessRelations(modifier: Modifier = Modifier){
+fun StudentBusinessRelations(onKenyawebCoursesPageClicked: (Boolean) -> Unit, kenyawebCoursesPageState: Boolean, modifier: Modifier = Modifier){
     Column(modifier = modifier.padding(vertical = 10.dp, horizontal = 20.dp)) {
         val currentProgress by remember { mutableFloatStateOf(17f) }
         Row(modifier = modifier
@@ -107,7 +109,7 @@ fun StudentBusinessRelations(modifier: Modifier = Modifier){
                     }
                     LinearProgressIndicator(progress = { currentProgress })
                     Text(text = "Potential")
-                    ElevatedButton(onClick = { /*TODO*/ }) {
+                    ElevatedButton(onClick = { onKenyawebCoursesPageClicked(!kenyawebCoursesPageState) }) {
                         Text(text = "Courses")
                     }
                 }
@@ -197,10 +199,11 @@ fun StudentSchedules(modifier: Modifier = Modifier){
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun StudentPagePreview() {
     UniversityClubsOfKenyaTheme {
         StudentDomain()
     }
-}
+}*/

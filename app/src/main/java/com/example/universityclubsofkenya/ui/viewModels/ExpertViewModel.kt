@@ -24,7 +24,19 @@ class ExpertViewModel(private val courseRepository: CourseRepository): ViewModel
     private val _uiState = MutableStateFlow(ExpertUiState())
     val uiState: StateFlow<ExpertUiState> = _uiState.asStateFlow()
 
+    var chapter by mutableStateOf("")
+
+    var chapterName = ChapterName("")
+
     var expertPageState by mutableStateOf(false)
+    var newChapterState by mutableStateOf(false)
+    var chapterDoneState by mutableStateOf(false)
+
+
+    fun onChapterDetailsChanged(ch: String){
+        chapter = ch
+    }
+
 
     fun updateChaptersChanged(res: List<ChapterName>){
         _uiState.value = ExpertUiState(chapters = res)
@@ -33,6 +45,12 @@ class ExpertViewModel(private val courseRepository: CourseRepository): ViewModel
     suspend fun getChapters(): Deferred<List<ChapterName>> = coroutineScope {
         viewModelScope.async {
             courseRepository.getChapters()
+        }
+    }
+
+    suspend fun addChapters(): Deferred<List<ChapterName>> = coroutineScope {
+        viewModelScope.async {
+            courseRepository.addAndGetChapters(ChapterName(chapter))
         }
     }
 

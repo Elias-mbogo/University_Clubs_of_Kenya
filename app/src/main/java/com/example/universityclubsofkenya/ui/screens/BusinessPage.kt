@@ -1,5 +1,6 @@
 package com.example.universityclubsofkenya.ui.screens
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -14,31 +15,46 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.data.models.ChapterName
-import com.example.universityclubsofkenya.ui.reusables.Portal
-import org.jetbrains.annotations.ApiStatus.Experimental
+import com.example.universityclubsofkenya.ui.viewModels.ExpertViewModel
 
 @Composable
-fun Business(chapters: List<ChapterName>, modifier: Modifier = Modifier){
+fun Business(chapterDoneState: Boolean, onChapterDoneButtonClicked: (Boolean) -> Unit,
+             newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit, chapter: String,
+             onChapterChanged: (String) -> Unit, expertViewModel: ExpertViewModel, chapters: List<ChapterName>,
+             modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
     Column(modifier = modifier.verticalScroll(scrollState)) {
-        Portal()
+//        Portal()
         UniversityRelations()
-        Assessment(chapters)
+        Assessment(chapterDoneState, onChapterDoneButtonClicked, chapters)
+        if(expertViewModel.chapterDoneState){
+            AddChapterDialogBox(chapterDoneState, onChapterDoneButtonClicked, newChapterState, onChapterButtonClicked,  chapter, onChapterChanged)
+        }
+
+        if(expertViewModel.newChapterState){
+            LaunchedEffect(expertViewModel) {
+                expertViewModel.updateChaptersChanged(expertViewModel.addChapters().await())
+                expertViewModel.chapterDoneState = false
+                expertViewModel.newChapterState = false
+            }
+        }
 
     }
 }
@@ -118,7 +134,8 @@ fun UniversityRelations(modifier: Modifier = Modifier){
 }
 
 @Composable
-fun Assessment(chapters: List<ChapterName>, modifier: Modifier = Modifier){
+fun Assessment(chapterDoneState: Boolean, onChapterDoneButtonClicked: (Boolean) -> Unit,
+               chapters: List<ChapterName>, modifier: Modifier = Modifier){
     Column (modifier = modifier.padding(10.dp)){
         Card{
             val scrollState = rememberScrollState()
@@ -130,11 +147,8 @@ fun Assessment(chapters: List<ChapterName>, modifier: Modifier = Modifier){
                 }
                 Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                     Text(text = "COURSE:")
-                    Row{
-                       IconButton(onClick = { /*TODO*/ }) {
-                           Icon(painter = painterResource(R.drawable.addition), contentDescription = "add")
-                       }
-                        Text(text = "Add Chapter")
+                    Button(onClick = {onChapterDoneButtonClicked(!chapterDoneState)} ) {
+                        Text("Add Chapter")
                     }
                 }
                 Spacer(modifier = modifier.padding(7.dp))
@@ -187,13 +201,26 @@ fun Exams(scrollState: ScrollState, modifier: Modifier = Modifier){
 }
 
 @Composable
-fun AddChapterDialogBox(){
+fun AddChapterDialogBox(chapterDoneState: Boolean, onChapterDoneButtonClicked: (Boolean) -> Unit,
+                        newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit,  chapter: String,
+                        onChapterChanged: (String) -> Unit, modifier: Modifier = Modifier){
+    val activity = (LocalContext.current as Activity)
+
+    @OptIn(ExperimentalMaterial3Api::class)
     AlertDialog(
-        onDismissRequest = {/*TODO*/},
+        onDismissRequest = {onChapterDoneButtonClicked(!chapterDoneState)},
         title = { Text("Kotlin Language")},
-        text = { TextField(value = "Add Chapter", onValueChange = {/*TODO*/})},
-        confirmButton = {/*TODO*/},
-        dismissButton = {/*TODO*/}
+        text = { TextField(value = chapter, onValueChange = onChapterChanged, label = {Text("Add Title")})},
+        confirmButton = {
+            TextButton(onClick = {onChapterButtonClicked(!newChapterState)}) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {onChapterDoneButtonClicked(!chapterDoneState)}) {
+                Text("Dismiss")
+            }
+        }
     )
 }
 /*

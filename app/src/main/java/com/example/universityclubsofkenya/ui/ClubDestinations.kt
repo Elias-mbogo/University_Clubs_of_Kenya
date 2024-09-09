@@ -11,11 +11,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.universityclubsofkenya.ui.reusables.SignInAccount
 import com.example.universityclubsofkenya.ui.screens.Business
+import com.example.universityclubsofkenya.ui.screens.CourseScreen
 import com.example.universityclubsofkenya.ui.screens.Home
 import com.example.universityclubsofkenya.ui.screens.StudentDomain
+import com.example.universityclubsofkenya.ui.screens.StudentGroup
 import com.example.universityclubsofkenya.ui.screens.TeacherDomain
 import com.example.universityclubsofkenya.ui.viewModels.AuthenticationViewModel
 import com.example.universityclubsofkenya.ui.viewModels.ExpertViewModel
+import com.example.universityclubsofkenya.ui.viewModels.StudentViewModel
 
 interface ClubDestinations{
     val route: String
@@ -51,11 +54,22 @@ object Teacher: ClubDestinations{
         get() = "teacher"
 }
 
+object StudentCourses: ClubDestinations{
+    override val route: String
+        get() = "student-courses"
+}
+
+object StudentGroupChat: ClubDestinations{
+    override val route: String
+        get() = "student-group"
+}
+
 
 @Composable
 fun ClubApp(modifier: Modifier = Modifier,
             authenticationViewModel: AuthenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory),
-            expertViewModel: ExpertViewModel = viewModel(factory = ExpertViewModel.Factory)){
+            expertViewModel: ExpertViewModel = viewModel(factory = ExpertViewModel.Factory),
+            studentViewModel: StudentViewModel = viewModel(factory = StudentViewModel.Factory)){
     val navController = rememberNavController()
 
     NavHost(
@@ -86,7 +100,22 @@ fun ClubApp(modifier: Modifier = Modifier,
                 onExpertNavigationClicked = {expertViewModel.expertPageState = it})
         }
         composable(route = Student.route){
-            StudentDomain()
+            if(studentViewModel.kenyawebCoursesPageState){
+                LaunchedEffect(studentViewModel) {
+                    studentViewModel.updateChaptersChanged(studentViewModel.getCourseChapters().await())
+                    navController.navigate(StudentCourses.route)
+                    studentViewModel.kenyawebCoursesPageState = false
+                }
+            }
+            StudentDomain(navController = navController, onKenyawebCoursesPageClicked = {studentViewModel.kenyawebCoursesPageState = it},
+                kenyawebCoursesPageState = studentViewModel.kenyawebCoursesPageState)
+        }
+        composable(route = StudentCourses.route){
+            val studentUiState by studentViewModel.uiState.collectAsState()
+            CourseScreen(studentUiState.chapters)
+        }
+        composable(route = StudentGroupChat.route){
+            StudentGroup()
         }
         composable(route = Teacher.route){
             val authUiState by authenticationViewModel.uiState.collectAsState()
@@ -94,7 +123,11 @@ fun ClubApp(modifier: Modifier = Modifier,
         }
         composable(route = Business.route){
             val expertUiState by expertViewModel.uiState.collectAsState()
-            Business(expertUiState.chapters)
+            Business(
+                chapterDoneState = expertViewModel.chapterDoneState, onChapterDoneButtonClicked = {expertViewModel.chapterDoneState = it},
+                newChapterState = expertViewModel.newChapterState, onChapterButtonClicked = {expertViewModel.newChapterState = it},
+                chapter = expertViewModel.chapter, onChapterChanged = {expertViewModel.onChapterDetailsChanged(it)},
+                expertViewModel = expertViewModel, chapters = expertUiState.chapters)
         }
         composable(route = SignIn.route){
             if (authenticationViewModel.signInPost){

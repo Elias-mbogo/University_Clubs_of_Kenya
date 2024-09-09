@@ -36,7 +36,7 @@ fun TeacherDomain(companyTrial: AuthUiState, modifier: Modifier = Modifier){
     Column (modifier = modifier
         .padding(vertical = 20.dp)
         .verticalScroll(scrollState)){
-        Portal()
+//        Portal()
         TeacherBusinessRelations(companyTrial)
         CalendarSystem()
     }

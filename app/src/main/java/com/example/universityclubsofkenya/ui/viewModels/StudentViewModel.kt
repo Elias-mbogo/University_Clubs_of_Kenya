@@ -25,6 +25,7 @@ class StudentViewModel(val courseRepository: CourseRepository): ViewModel() {
     val uiState: StateFlow<StudentUiState> = _uiState.asStateFlow()
 
     var studentPageState by mutableStateOf(false)
+    var kenyawebCoursesPageState by mutableStateOf(false)
 
     fun updateChaptersChanged(res: List<ChapterName>){
         _uiState.value = StudentUiState(chapters = res)

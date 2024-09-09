@@ -19,8 +19,11 @@ import com.example.universityclubsofkenya.data.models.ChapterName
 import com.example.universityclubsofkenya.ui.theme.Typography
 
 @Composable
-fun CourseScreen(modifier: Modifier = Modifier){
-    CourseTitle()
+fun CourseScreen(chapters: List<ChapterName>, modifier: Modifier = Modifier){
+    Column {
+        CourseTitle()
+        Course(chapters)
+    }
 }
 
 @Composable
