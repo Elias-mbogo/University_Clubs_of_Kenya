@@ -18,6 +18,7 @@ import com.example.universityclubsofkenya.ui.screens.StudentGroup
 import com.example.universityclubsofkenya.ui.screens.TeacherDomain
 import com.example.universityclubsofkenya.ui.viewModels.AuthenticationViewModel
 import com.example.universityclubsofkenya.ui.viewModels.ExpertViewModel
+import com.example.universityclubsofkenya.ui.viewModels.GroupViewModel
 import com.example.universityclubsofkenya.ui.viewModels.StudentViewModel
 
 interface ClubDestinations{
@@ -69,7 +70,8 @@ object StudentGroupChat: ClubDestinations{
 fun ClubApp(modifier: Modifier = Modifier,
             authenticationViewModel: AuthenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory),
             expertViewModel: ExpertViewModel = viewModel(factory = ExpertViewModel.Factory),
-            studentViewModel: StudentViewModel = viewModel(factory = StudentViewModel.Factory)){
+            studentViewModel: StudentViewModel = viewModel(factory = StudentViewModel.Factory),
+            groupViewModel: GroupViewModel = viewModel(factory = GroupViewModel.Factory)){
     val navController = rememberNavController()
 
     NavHost(
@@ -107,7 +109,7 @@ fun ClubApp(modifier: Modifier = Modifier,
                     studentViewModel.kenyawebCoursesPageState = false
                 }
             }
-            StudentDomain(navController = navController, onKenyawebCoursesPageClicked = {studentViewModel.kenyawebCoursesPageState = it},
+            StudentDomain(groupViewModel= groupViewModel, navController = navController, onKenyawebCoursesPageClicked = {studentViewModel.kenyawebCoursesPageState = it},
                 kenyawebCoursesPageState = studentViewModel.kenyawebCoursesPageState)
         }
         composable(route = StudentCourses.route){
@@ -115,7 +117,8 @@ fun ClubApp(modifier: Modifier = Modifier,
             CourseScreen(studentUiState.chapters)
         }
         composable(route = StudentGroupChat.route){
-            StudentGroup()
+            val groupUiState by groupViewModel.uiState.collectAsState()
+            StudentGroup(groupViewModel = groupViewModel, groupMessages = groupUiState.groupMessages)
         }
         composable(route = Teacher.route){
             val authUiState by authenticationViewModel.uiState.collectAsState()
@@ -123,11 +126,7 @@ fun ClubApp(modifier: Modifier = Modifier,
         }
         composable(route = Business.route){
             val expertUiState by expertViewModel.uiState.collectAsState()
-            Business(
-                chapterDoneState = expertViewModel.chapterDoneState, onChapterDoneButtonClicked = {expertViewModel.chapterDoneState = it},
-                newChapterState = expertViewModel.newChapterState, onChapterButtonClicked = {expertViewModel.newChapterState = it},
-                chapter = expertViewModel.chapter, onChapterChanged = {expertViewModel.onChapterDetailsChanged(it)},
-                expertViewModel = expertViewModel, chapters = expertUiState.chapters)
+            Business(expertViewModel = expertViewModel, expertUiState = expertUiState)
         }
         composable(route = SignIn.route){
             if (authenticationViewModel.signInPost){

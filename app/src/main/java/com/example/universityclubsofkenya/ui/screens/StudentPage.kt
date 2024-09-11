@@ -20,6 +20,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -32,18 +34,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.universityclubsofkenya.R
+import com.example.universityclubsofkenya.ui.StudentGroupChat
 import com.example.universityclubsofkenya.ui.reusables.Portal
 import com.example.universityclubsofkenya.ui.theme.UniversityClubsOfKenyaTheme
+import com.example.universityclubsofkenya.ui.viewModels.GroupViewModel
+import com.example.universityclubsofkenya.ui.viewModels.uiStates.GroupUiState
 
 
 @Composable
-fun StudentDomain(navController: NavController, onKenyawebCoursesPageClicked: (Boolean) -> Unit,
+fun StudentDomain(groupViewModel: GroupViewModel, navController: NavController, onKenyawebCoursesPageClicked: (Boolean) -> Unit,
                   kenyawebCoursesPageState: Boolean, modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
     Column (modifier = modifier
         .padding(vertical = 20.dp)
         .verticalScroll(scrollState)){
-        Portal(navController)
+        if(groupViewModel.studentGroupPageState){
+            LaunchedEffect(groupViewModel) {
+                groupViewModel.updateStudentChatsChanged(groupViewModel.getStudentChats().await())
+                navController.navigate(StudentGroupChat.route)
+                groupViewModel.studentGroupPageState = false
+            }
+        }
+        Portal(studentGroupPageState = groupViewModel.studentGroupPageState, onStudentGroupPageClicked = {groupViewModel.studentGroupPageState = it},
+            navController = navController)
         StudentBusinessRelations(onKenyawebCoursesPageClicked, kenyawebCoursesPageState)
         StudentSchedules()
     }

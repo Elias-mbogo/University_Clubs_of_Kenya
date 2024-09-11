@@ -15,24 +15,41 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.universityclubsofkenya.R
+import com.example.universityclubsofkenya.data.models.GroupMessage
 import com.example.universityclubsofkenya.ui.reusables.Group
-import com.example.universityclubsofkenya.ui.theme.UniversityClubsOfKenyaTheme
+import com.example.universityclubsofkenya.ui.viewModels.GroupViewModel
 
 @Composable
-fun StudentGroup(modifier: Modifier = Modifier){
+fun StudentGroup(groupViewModel: GroupViewModel, groupMessages: List<GroupMessage>, modifier: Modifier = Modifier){
+
+    var message by remember { mutableStateOf("") }
+    var studentGroupMessageState by remember { mutableStateOf(false) }
+
+    if(studentGroupMessageState){
+        LaunchedEffect(groupViewModel) {
+            groupViewModel.updateStudentChatsChanged(groupViewModel.postAndGetStudentChats(GroupMessage(message, "Kees")).await())
+            message = ""
+            studentGroupMessageState = false
+        }
+
+    }
     val scrollState = rememberScrollState()
     Scaffold(topBar = {Group(onGroupButtonClicked = { /*TODO*/ })},
         bottomBar = {
         Row( modifier = modifier
             .fillMaxWidth()
             .padding(10.dp), horizontalArrangement = Arrangement.Center){
-            TextField(value = "Add Text", onValueChange = {/*TODO*/})
-            IconButton(onClick = {/*TODO*/ }) {
+            TextField(value = message, onValueChange = { message = it }, label = { Text(text = "Add Message")})
+            IconButton(onClick = {studentGroupMessageState = true}) {
                 Image(painter = painterResource(R.drawable.send), contentDescription = "send")
             }
         }
@@ -42,16 +59,19 @@ fun StudentGroup(modifier: Modifier = Modifier){
             .fillMaxWidth()
             .verticalScroll(scrollState)) {
             Column(modifier = modifier.padding(10.dp)){
-                ElevatedCard{
-                    Column(modifier = modifier.padding(5.dp)){
-                        Text("Hello, Welcome to the multimedia university group")
-                        /*Text("Where will we be meeting ?")
-                        Text("In the computer lab A06 in Block A")*/
-                    }
-                }
-                Card {
-                    Column(modifier = modifier.padding(5.dp)){
-                        Text("Elias")
+
+                for(groupMessage in groupMessages){
+                    Column (modifier = modifier.padding(vertical = 10.dp)) {
+                        ElevatedCard{
+                            Column(modifier = modifier.padding(5.dp)){
+                                Text(groupMessage.body)
+                            }
+                        }
+                        Card {
+                            Column(modifier = modifier.padding(5.dp)){
+                                Text(groupMessage.username)
+                            }
+                        }
                     }
                 }
             }
@@ -59,10 +79,10 @@ fun StudentGroup(modifier: Modifier = Modifier){
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun StudentGroupPagePreview(){
     UniversityClubsOfKenyaTheme {
         StudentGroup()
     }
-}
+}*/

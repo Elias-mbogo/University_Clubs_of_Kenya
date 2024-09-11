@@ -33,28 +33,29 @@ import androidx.compose.ui.unit.dp
 import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.data.models.ChapterName
 import com.example.universityclubsofkenya.ui.viewModels.ExpertViewModel
+import com.example.universityclubsofkenya.ui.viewModels.uiStates.ExpertUiState
 
 @Composable
-fun Business(chapterDoneState: Boolean, onChapterDoneButtonClicked: (Boolean) -> Unit,
-             newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit, chapter: String,
-             onChapterChanged: (String) -> Unit, expertViewModel: ExpertViewModel, chapters: List<ChapterName>,
+fun Business(expertViewModel: ExpertViewModel, expertUiState: ExpertUiState,
              modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
     Column(modifier = modifier.verticalScroll(scrollState)) {
 //        Portal()
         UniversityRelations()
-        Assessment(chapterDoneState, onChapterDoneButtonClicked, chapters)
-        if(expertViewModel.chapterDoneState){
-            AddChapterDialogBox(chapterDoneState, onChapterDoneButtonClicked, newChapterState, onChapterButtonClicked,  chapter, onChapterChanged)
+        Assessment(newChapterState = expertViewModel.newChapterState,
+            onChapterButtonClicked = {expertViewModel.newChapterState = it}, chapters = expertUiState.chapters)
+        if(expertViewModel.newChapterState){
+            AddChapterDialogBox(newChapterState = expertViewModel.newChapterState,
+                onChapterButtonClicked = {expertViewModel.newChapterState = it},
+                chapter = expertViewModel.chapter, onChapterChanged = {expertViewModel.onChapterDetailsChanged(it)})
         }
 
-        if(expertViewModel.newChapterState){
+/*        if(expertViewModel.newChapterState){
             LaunchedEffect(expertViewModel) {
                 expertViewModel.updateChaptersChanged(expertViewModel.addChapters().await())
-                expertViewModel.chapterDoneState = false
                 expertViewModel.newChapterState = false
             }
-        }
+        }*/
 
     }
 }
@@ -134,7 +135,7 @@ fun UniversityRelations(modifier: Modifier = Modifier){
 }
 
 @Composable
-fun Assessment(chapterDoneState: Boolean, onChapterDoneButtonClicked: (Boolean) -> Unit,
+fun Assessment(newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit,
                chapters: List<ChapterName>, modifier: Modifier = Modifier){
     Column (modifier = modifier.padding(10.dp)){
         Card{
@@ -147,7 +148,7 @@ fun Assessment(chapterDoneState: Boolean, onChapterDoneButtonClicked: (Boolean) 
                 }
                 Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                     Text(text = "COURSE:")
-                    Button(onClick = {onChapterDoneButtonClicked(!chapterDoneState)} ) {
+                    Button(onClick = {onChapterButtonClicked(!newChapterState)} ) {
                         Text("Add Chapter")
                     }
                 }
@@ -201,14 +202,13 @@ fun Exams(scrollState: ScrollState, modifier: Modifier = Modifier){
 }
 
 @Composable
-fun AddChapterDialogBox(chapterDoneState: Boolean, onChapterDoneButtonClicked: (Boolean) -> Unit,
-                        newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit,  chapter: String,
+fun AddChapterDialogBox(newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit,  chapter: String,
                         onChapterChanged: (String) -> Unit, modifier: Modifier = Modifier){
     val activity = (LocalContext.current as Activity)
 
     @OptIn(ExperimentalMaterial3Api::class)
     AlertDialog(
-        onDismissRequest = {onChapterDoneButtonClicked(!chapterDoneState)},
+        onDismissRequest = {onChapterButtonClicked(!newChapterState)},
         title = { Text("Kotlin Language")},
         text = { TextField(value = chapter, onValueChange = onChapterChanged, label = {Text("Add Title")})},
         confirmButton = {
@@ -217,7 +217,7 @@ fun AddChapterDialogBox(chapterDoneState: Boolean, onChapterDoneButtonClicked: (
             }
         },
         dismissButton = {
-            TextButton(onClick = {onChapterDoneButtonClicked(!chapterDoneState)}) {
+            TextButton(onClick = {onChapterButtonClicked(!newChapterState)}) {
                 Text("Dismiss")
             }
         }

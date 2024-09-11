@@ -62,7 +62,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     // Kotlin serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     // Retrofit with Kotlin serialization Converter
     implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

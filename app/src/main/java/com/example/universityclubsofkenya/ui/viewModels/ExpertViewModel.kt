@@ -26,17 +26,13 @@ class ExpertViewModel(private val courseRepository: CourseRepository): ViewModel
 
     var chapter by mutableStateOf("")
 
-    var chapterName = ChapterName("")
-
     var expertPageState by mutableStateOf(false)
     var newChapterState by mutableStateOf(false)
-    var chapterDoneState by mutableStateOf(false)
 
 
     fun onChapterDetailsChanged(ch: String){
         chapter = ch
     }
-
 
     fun updateChaptersChanged(res: List<ChapterName>){
         _uiState.value = ExpertUiState(chapters = res)

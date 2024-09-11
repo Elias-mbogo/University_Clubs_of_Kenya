@@ -1,10 +1,13 @@
 package com.example.universityclubsofkenya.data
 
 import com.example.universityclubsofkenya.data.repositories.CourseRepository
+import com.example.universityclubsofkenya.data.repositories.GroupRepository
 import com.example.universityclubsofkenya.data.repositories.NetworkCourseRepository
+import com.example.universityclubsofkenya.data.repositories.NetworkGroupRepository
 import com.example.universityclubsofkenya.data.repositories.NetworkUsersRepository
 import com.example.universityclubsofkenya.data.repositories.UsersRepository
 import com.example.universityclubsofkenya.network.CourseApiService
+import com.example.universityclubsofkenya.network.GroupApiService
 import com.example.universityclubsofkenya.network.UsersApiService
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,10 +17,11 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 interface AppContainer{
     val usersRepository: UsersRepository
     val courseRepository: CourseRepository
+    val groupRepository: GroupRepository
 }
 
 class DefaultAppContainer: AppContainer {
-    private val baseUrl = "https://8243-194-201-253-246.ngrok-free.app"
+    private val baseUrl = "https://48e1-194-201-253-246.ngrok-free.app"
     private val retrofit: Retrofit = Retrofit.Builder()
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(baseUrl)
@@ -38,5 +42,14 @@ class DefaultAppContainer: AppContainer {
     override val courseRepository: CourseRepository by lazy{
         NetworkCourseRepository(courseRetrofitService)
     }
+
+    private val groupRetrofitService: GroupApiService by lazy{
+        retrofit.create(GroupApiService::class.java)
+    }
+
+    override val groupRepository: GroupRepository by lazy {
+        NetworkGroupRepository(groupRetrofitService)
+    }
+
 
 }
