@@ -5,7 +5,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-
 interface GroupApiService {
     @GET("/student-messages")
     suspend fun getStudentChats(): List<GroupMessage>

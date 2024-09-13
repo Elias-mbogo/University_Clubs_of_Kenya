@@ -28,6 +28,7 @@ class ExpertViewModel(private val courseRepository: CourseRepository): ViewModel
 
     var expertPageState by mutableStateOf(false)
     var newChapterState by mutableStateOf(false)
+    var chapterDoneState by mutableStateOf(false)
 
 
     fun onChapterDetailsChanged(ch: String){
@@ -38,13 +39,14 @@ class ExpertViewModel(private val courseRepository: CourseRepository): ViewModel
         _uiState.value = ExpertUiState(chapters = res)
     }
 
+
     suspend fun getChapters(): Deferred<List<ChapterName>> = coroutineScope {
         viewModelScope.async {
             courseRepository.getChapters()
         }
     }
 
-    suspend fun addChapters(): Deferred<List<ChapterName>> = coroutineScope {
+    suspend fun addChapters(chapter: String): Deferred<List<ChapterName>> = coroutineScope {
         viewModelScope.async {
             courseRepository.addAndGetChapters(ChapterName(chapter))
         }

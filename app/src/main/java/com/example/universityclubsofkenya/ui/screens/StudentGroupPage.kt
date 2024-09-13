@@ -40,7 +40,6 @@ fun StudentGroup(groupViewModel: GroupViewModel, groupMessages: List<GroupMessag
             message = ""
             studentGroupMessageState = false
         }
-
     }
     val scrollState = rememberScrollState()
     Scaffold(topBar = {Group(onGroupButtonClicked = { /*TODO*/ })},

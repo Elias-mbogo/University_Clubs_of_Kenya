@@ -24,6 +24,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -32,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.data.models.ChapterName
+import com.example.universityclubsofkenya.data.models.GroupMessage
 import com.example.universityclubsofkenya.ui.viewModels.ExpertViewModel
 import com.example.universityclubsofkenya.ui.viewModels.uiStates.ExpertUiState
 
@@ -45,17 +51,21 @@ fun Business(expertViewModel: ExpertViewModel, expertUiState: ExpertUiState,
         Assessment(newChapterState = expertViewModel.newChapterState,
             onChapterButtonClicked = {expertViewModel.newChapterState = it}, chapters = expertUiState.chapters)
         if(expertViewModel.newChapterState){
-            AddChapterDialogBox(newChapterState = expertViewModel.newChapterState,
+            AddChapterDialogBox(
+                chapterDoneState = expertViewModel.chapterDoneState,
+                onChapterDoneButtonClicked = {expertViewModel.chapterDoneState = it},
+                newChapterState = expertViewModel.newChapterState,
                 onChapterButtonClicked = {expertViewModel.newChapterState = it},
                 chapter = expertViewModel.chapter, onChapterChanged = {expertViewModel.onChapterDetailsChanged(it)})
-        }
 
-/*        if(expertViewModel.newChapterState){
-            LaunchedEffect(expertViewModel) {
-                expertViewModel.updateChaptersChanged(expertViewModel.addChapters().await())
+            if(expertViewModel.chapterDoneState){
+                LaunchedEffect(expertViewModel) {
+                    expertViewModel.updateChaptersChanged(expertViewModel.addChapters(expertViewModel.chapter).await())
+                    expertViewModel.chapterDoneState = false
+                }
                 expertViewModel.newChapterState = false
             }
-        }*/
+        }
 
     }
 }
@@ -137,6 +147,7 @@ fun UniversityRelations(modifier: Modifier = Modifier){
 @Composable
 fun Assessment(newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit,
                chapters: List<ChapterName>, modifier: Modifier = Modifier){
+
     Column (modifier = modifier.padding(10.dp)){
         Card{
             val scrollState = rememberScrollState()
@@ -146,7 +157,9 @@ fun Assessment(newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Un
                 Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     Text(text = "YEAR: 2024")
                 }
-                Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+                Column(modifier = modifier.fillMaxWidth(),
+                    horizontalAlignment =  Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center){
                     Text(text = "COURSE:")
                     Button(onClick = {onChapterButtonClicked(!newChapterState)} ) {
                         Text("Add Chapter")
@@ -202,7 +215,8 @@ fun Exams(scrollState: ScrollState, modifier: Modifier = Modifier){
 }
 
 @Composable
-fun AddChapterDialogBox(newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit,  chapter: String,
+fun AddChapterDialogBox(chapterDoneState: Boolean, onChapterDoneButtonClicked: (Boolean) -> Unit,
+                        newChapterState: Boolean, onChapterButtonClicked: (Boolean) -> Unit,  chapter: String,
                         onChapterChanged: (String) -> Unit, modifier: Modifier = Modifier){
     val activity = (LocalContext.current as Activity)
 
@@ -212,7 +226,7 @@ fun AddChapterDialogBox(newChapterState: Boolean, onChapterButtonClicked: (Boole
         title = { Text("Kotlin Language")},
         text = { TextField(value = chapter, onValueChange = onChapterChanged, label = {Text("Add Title")})},
         confirmButton = {
-            TextButton(onClick = {onChapterButtonClicked(!newChapterState)}) {
+            TextButton(onClick = {onChapterDoneButtonClicked(!chapterDoneState)}) {
                 Text("Confirm")
             }
         },
@@ -223,6 +237,7 @@ fun AddChapterDialogBox(newChapterState: Boolean, onChapterButtonClicked: (Boole
         }
     )
 }
+
 /*
 @Preview(showBackground = true)
 @Composable

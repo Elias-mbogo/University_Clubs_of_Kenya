@@ -21,7 +21,7 @@ interface AppContainer{
 }
 
 class DefaultAppContainer: AppContainer {
-    private val baseUrl = "https://48e1-194-201-253-246.ngrok-free.app"
+    private val baseUrl = "https://10ac-194-201-253-246.ngrok-free.app"
     private val retrofit: Retrofit = Retrofit.Builder()
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(baseUrl)
