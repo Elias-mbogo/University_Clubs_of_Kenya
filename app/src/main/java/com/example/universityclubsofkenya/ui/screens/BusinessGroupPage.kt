@@ -30,31 +30,34 @@ import com.example.universityclubsofkenya.ui.reusables.Group
 import com.example.universityclubsofkenya.ui.viewModels.GroupViewModel
 
 @Composable
-fun StudentGroup(groupViewModel: GroupViewModel, groupMessages: List<GroupMessage>, modifier: Modifier = Modifier){
+fun BusinessGroup(groupViewModel: GroupViewModel, groupMessages: List<GroupMessage>, modifier: Modifier = Modifier){
 
     var message by remember { mutableStateOf("") }
-    var studentGroupMessageState by remember { mutableStateOf(false) }
+    var businessGroupMessageState by remember { mutableStateOf(false) }
 
-    if(studentGroupMessageState){
+    if(businessGroupMessageState){
         LaunchedEffect(groupViewModel) {
-            groupViewModel.updateStudentChatsChanged(groupViewModel.postAndGetStudentChats(GroupMessage(message, "Kees")).await())
+            groupViewModel.updateExpertChatsChanged(groupViewModel.postAndGetStudentChats(
+                GroupMessage(message, "Kees")
+            ).await())
             message = ""
-            studentGroupMessageState = false
+            businessGroupMessageState = false
         }
     }
-
-    Scaffold(topBar = {Group(onGroupButtonClicked = { /*TODO*/ }, groupName = "Multimedia")},
+    Scaffold(topBar = { Group(onGroupButtonClicked = { /*TODO*/ }, groupName = "Kenyaweb") },
         bottomBar = {
-        Row( modifier = modifier
-            .fillMaxWidth()
-            .padding(10.dp), horizontalArrangement = Arrangement.Center){
-            TextField(value = message, onValueChange = { message = it },
-                label = { Text(text = "Add Message")}, modifier = modifier.horizontalScroll(rememberScrollState()))
-            IconButton(onClick = {studentGroupMessageState = true}) {
-                Image(painter = painterResource(R.drawable.send), contentDescription = "send")
+            Row( modifier = modifier
+                .fillMaxWidth()
+                .padding(10.dp), horizontalArrangement = Arrangement.Center){
+                TextField(value = message, onValueChange = { message = it },
+                    label = { Text(text = "Add Message") }, modifier = modifier.verticalScroll(
+                        rememberScrollState()
+                    ))
+                IconButton(onClick = {businessGroupMessageState = true}) {
+                    Image(painter = painterResource(R.drawable.send), contentDescription = "send")
+                }
             }
-        }
-    }) {innerPadding ->
+        }) {innerPadding ->
         Column(modifier = modifier
             .padding(innerPadding)
             .fillMaxWidth()
@@ -79,11 +82,3 @@ fun StudentGroup(groupViewModel: GroupViewModel, groupMessages: List<GroupMessag
         }
     }
 }
-
-/*@Preview(showBackground = true)
-@Composable
-fun StudentGroupPagePreview(){
-    UniversityClubsOfKenyaTheme {
-        StudentGroup()
-    }
-}*/

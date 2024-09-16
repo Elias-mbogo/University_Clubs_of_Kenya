@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Group(onGroupButtonClicked: () -> Unit, modifier: Modifier = Modifier){
+fun Group(onGroupButtonClicked: () -> Unit, groupName: String, modifier: Modifier = Modifier){
     Row(modifier= modifier
         .fillMaxWidth()
         .padding(30.dp), horizontalArrangement = Arrangement.Center ){
         ElevatedButton(onClick = onGroupButtonClicked) {
-            Text(text ="Multimedia")
+            Text(groupName)
         }
     }
 }

@@ -11,7 +11,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.universityclubsofkenya.ui.reusables.SignInAccount
 import com.example.universityclubsofkenya.ui.screens.Business
+import com.example.universityclubsofkenya.ui.screens.BusinessGroup
 import com.example.universityclubsofkenya.ui.screens.CourseScreen
+import com.example.universityclubsofkenya.ui.screens.ExamScheduleScreen
 import com.example.universityclubsofkenya.ui.screens.Home
 import com.example.universityclubsofkenya.ui.screens.StudentDomain
 import com.example.universityclubsofkenya.ui.screens.StudentGroup
@@ -19,6 +21,7 @@ import com.example.universityclubsofkenya.ui.screens.TeacherDomain
 import com.example.universityclubsofkenya.ui.viewModels.AuthenticationViewModel
 import com.example.universityclubsofkenya.ui.viewModels.ExpertViewModel
 import com.example.universityclubsofkenya.ui.viewModels.GroupViewModel
+import com.example.universityclubsofkenya.ui.viewModels.ScheduleViewModel
 import com.example.universityclubsofkenya.ui.viewModels.StudentViewModel
 
 interface ClubDestinations{
@@ -33,6 +36,11 @@ object Home: ClubDestinations{
 object Business: ClubDestinations{
     override val route: String
         get() = "business"
+}
+
+object BusinessGroupChat: ClubDestinations{
+    override val route: String
+        get() = "business-group"
 }
 
 object BusinessParticipant: ClubDestinations{
@@ -55,6 +63,11 @@ object Teacher: ClubDestinations{
         get() = "teacher"
 }
 
+object TeacherExamSchedule: ClubDestinations{
+    override val route: String
+        get() = "exam-schedule"
+}
+
 object StudentCourses: ClubDestinations{
     override val route: String
         get() = "student-courses"
@@ -71,7 +84,9 @@ fun ClubApp(modifier: Modifier = Modifier,
             authenticationViewModel: AuthenticationViewModel = viewModel(factory = AuthenticationViewModel.Factory),
             expertViewModel: ExpertViewModel = viewModel(factory = ExpertViewModel.Factory),
             studentViewModel: StudentViewModel = viewModel(factory = StudentViewModel.Factory),
-            groupViewModel: GroupViewModel = viewModel(factory = GroupViewModel.Factory)){
+            groupViewModel: GroupViewModel = viewModel(factory = GroupViewModel.Factory),
+            scheduleViewModel: ScheduleViewModel = viewModel()
+){
     val navController = rememberNavController()
 
     NavHost(
@@ -122,11 +137,19 @@ fun ClubApp(modifier: Modifier = Modifier,
         }
         composable(route = Teacher.route){
             val authUiState by authenticationViewModel.uiState.collectAsState()
-            TeacherDomain(authUiState)
+            TeacherDomain(navController, authUiState)
+        }
+        composable(route = TeacherExamSchedule.route){
+            ExamScheduleScreen(scheduleViewModel)
         }
         composable(route = Business.route){
             val expertUiState by expertViewModel.uiState.collectAsState()
-            Business(expertViewModel = expertViewModel, expertUiState = expertUiState)
+            Business(groupViewModel = groupViewModel, navController = navController,
+                expertViewModel = expertViewModel, expertUiState = expertUiState)
+        }
+        composable(route = BusinessGroupChat.route){
+            val groupUiState by groupViewModel.uiState.collectAsState()
+            BusinessGroup(groupViewModel = groupViewModel, groupMessages = groupUiState.groupMessages)
         }
         composable(route = SignIn.route){
             if (authenticationViewModel.signInPost){

@@ -55,8 +55,7 @@ fun StudentDomain(groupViewModel: GroupViewModel, navController: NavController, 
                 groupViewModel.studentGroupPageState = false
             }
         }
-        Portal(studentGroupPageState = groupViewModel.studentGroupPageState, onStudentGroupPageClicked = {groupViewModel.studentGroupPageState = it},
-            navController = navController)
+        Portal(groupPageState = groupViewModel.studentGroupPageState, onGroupPageClicked = {groupViewModel.studentGroupPageState = it})
         StudentBusinessRelations(onKenyawebCoursesPageClicked, kenyawebCoursesPageState)
         StudentSchedules()
     }

@@ -29,7 +29,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.universityclubsofkenya.R
+import com.example.universityclubsofkenya.ui.TeacherExamSchedule
 import com.example.universityclubsofkenya.ui.reusables.Portal
 import com.example.universityclubsofkenya.ui.theme.UniversityClubsOfKenyaTheme
 import com.example.universityclubsofkenya.ui.viewModels.uiStates.AuthUiState
@@ -37,14 +39,14 @@ import com.example.universityclubsofkenya.ui.viewModels.uiStates.AuthUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TeacherDomain(companyTrial: AuthUiState, modifier: Modifier = Modifier){
+fun TeacherDomain(navController: NavController, companyTrial: AuthUiState, modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
     val datePickerState = rememberDatePickerState()
     Column (modifier = modifier
         .padding(vertical = 20.dp)
         .verticalScroll(scrollState)){
 //        Portal()
-        TeacherBusinessRelations(companyTrial)
+        TeacherBusinessRelations(navController, companyTrial)
         CalendarMonth(datePickerState)
         CalendarSystem()
 
@@ -52,7 +54,7 @@ fun TeacherDomain(companyTrial: AuthUiState, modifier: Modifier = Modifier){
 }
 
 @Composable
-fun TeacherBusinessRelations(companyTrial: AuthUiState, modifier: Modifier = Modifier){
+fun TeacherBusinessRelations(navController: NavController, companyTrial: AuthUiState, modifier: Modifier = Modifier){
     Column(modifier = modifier.padding(vertical = 10.dp, horizontal = 10.dp)){
         Row(modifier = modifier
             .fillMaxWidth()
@@ -97,7 +99,7 @@ fun TeacherBusinessRelations(companyTrial: AuthUiState, modifier: Modifier = Mod
                     Text(text = "Tests: 7")
                 }
                 Column(modifier = modifier.padding(10.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
-                    Button(onClick = { /*TODO*/ }) {
+                    Button(onClick = { navController.navigate(TeacherExamSchedule.route) }) {
                         Text(text = "Schedule")
                     }
                 }

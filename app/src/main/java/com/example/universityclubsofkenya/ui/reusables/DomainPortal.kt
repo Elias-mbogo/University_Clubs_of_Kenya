@@ -18,7 +18,7 @@ import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.ui.StudentGroupChat
 
 @Composable
-fun Portal(studentGroupPageState: Boolean, onStudentGroupPageClicked: (Boolean) -> Unit,  navController: NavController, modifier: Modifier = Modifier){
+fun Portal(groupPageState: Boolean, onGroupPageClicked: (Boolean) -> Unit, modifier: Modifier = Modifier){
     Row(modifier = modifier
         .fillMaxWidth()
         .padding(15.dp), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -32,12 +32,11 @@ fun Portal(studentGroupPageState: Boolean, onStudentGroupPageClicked: (Boolean) 
             }
             Row {
                 Text(text = "SOFTWARE")
-                Text("M", color = Blue)
             }
 
         }
 
-        IconButton(onClick = { onStudentGroupPageClicked(!studentGroupPageState)}) {
+        IconButton(onClick = { onGroupPageClicked(!groupPageState)}) {
             Image(painter = painterResource(id = R.drawable.chat), contentDescription = "chat" )
         }
     }

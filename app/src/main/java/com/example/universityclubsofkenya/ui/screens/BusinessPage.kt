@@ -24,10 +24,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,18 +31,28 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.data.models.ChapterName
-import com.example.universityclubsofkenya.data.models.GroupMessage
+import com.example.universityclubsofkenya.ui.BusinessGroupChat
+import com.example.universityclubsofkenya.ui.reusables.Portal
 import com.example.universityclubsofkenya.ui.viewModels.ExpertViewModel
+import com.example.universityclubsofkenya.ui.viewModels.GroupViewModel
 import com.example.universityclubsofkenya.ui.viewModels.uiStates.ExpertUiState
 
 @Composable
-fun Business(expertViewModel: ExpertViewModel, expertUiState: ExpertUiState,
+fun Business(groupViewModel: GroupViewModel, navController: NavController, expertViewModel: ExpertViewModel, expertUiState: ExpertUiState,
              modifier: Modifier = Modifier){
     val scrollState = rememberScrollState()
     Column(modifier = modifier.verticalScroll(scrollState)) {
-//        Portal()
+        if(groupViewModel.businessGroupPageState){
+            LaunchedEffect(groupViewModel) {
+                groupViewModel.updateExpertChatsChanged(groupViewModel.getExpertChats().await())
+                navController.navigate(BusinessGroupChat.route)
+                groupViewModel.businessGroupPageState = false
+            }
+        }
+        Portal(groupPageState = groupViewModel.businessGroupPageState, onGroupPageClicked = {groupViewModel.businessGroupPageState = it})
         UniversityRelations()
         Assessment(newChapterState = expertViewModel.newChapterState,
             onChapterButtonClicked = {expertViewModel.newChapterState = it}, chapters = expertUiState.chapters)

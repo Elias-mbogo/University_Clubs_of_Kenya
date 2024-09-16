@@ -10,5 +10,8 @@ interface GroupApiService {
     suspend fun getStudentChats(): List<GroupMessage>
     @POST("/student-messages-add")
     suspend fun postAndGetStudentChats(@Body groupMessage: GroupMessage): List<GroupMessage>
-
+    @GET("/experts-messages")
+    suspend fun getExpertChats(): List<GroupMessage>
+    @POST("/experts-messages-add")
+    suspend fun postAndGetExpertChats(@Body groupMessage: GroupMessage): List<GroupMessage>
 }

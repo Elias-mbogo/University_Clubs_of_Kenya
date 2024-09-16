@@ -22,10 +22,16 @@ import kotlinx.coroutines.flow.asStateFlow
 class GroupViewModel(private val groupRepository: GroupRepository): ViewModel() {
     private val _uiState = MutableStateFlow(GroupUiState())
     val uiState: StateFlow<GroupUiState> = _uiState.asStateFlow()
-
+    //student group state
     var studentGroupPageState by mutableStateOf(false)
+    //business group state
+    var businessGroupPageState by mutableStateOf(false)
 
     fun updateStudentChatsChanged(res: List<GroupMessage>){
+        _uiState.value = GroupUiState(groupMessages = res)
+    }
+
+    fun updateExpertChatsChanged(res: List<GroupMessage>){
         _uiState.value = GroupUiState(groupMessages = res)
     }
 
@@ -38,6 +44,18 @@ class GroupViewModel(private val groupRepository: GroupRepository): ViewModel() 
     suspend fun postAndGetStudentChats(groupMessage: GroupMessage): Deferred<List<GroupMessage>> = coroutineScope {
         viewModelScope.async {
             groupRepository.postAndGetStudentChats(groupMessage)
+        }
+    }
+
+    suspend fun getExpertChats(): Deferred<List<GroupMessage>> = coroutineScope {
+        viewModelScope.async {
+            groupRepository.getExpertChats()
+        }
+    }
+
+    suspend fun postAndGetExpertChats(groupMessage: GroupMessage): Deferred<List<GroupMessage>> = coroutineScope {
+        viewModelScope.async {
+            groupRepository.postAndGetExpertChats(groupMessage)
         }
     }
 
