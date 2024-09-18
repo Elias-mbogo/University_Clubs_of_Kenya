@@ -1,12 +1,10 @@
 package com.example.universityclubsofkenya.ui.screens
 
-import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,22 +27,31 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.universityclubsofkenya.R
 import com.example.universityclubsofkenya.ui.reusables.Group
 import com.example.universityclubsofkenya.ui.viewModels.ScheduleViewModel
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExamScheduleScreen(scheduleViewModel: ScheduleViewModel, modifier: Modifier = Modifier){
 
     if(scheduleViewModel.dateDialogState){
-        DatePickerComponent(dateState = scheduleViewModel.dateDialogState, onDateButtonCliked = {scheduleViewModel.dateDialogState = it})
+        DatePickerComponent(dateState = scheduleViewModel.dateDialogState, onDateButtonClicked = {scheduleViewModel.dateDialogState = it},
+            onDateSelected = {scheduleViewModel.selectedDate = it})
     }
-    if(scheduleViewModel.timeDialogState){
-        TimePickerComponent(timeState = scheduleViewModel.timeDialogState, onTimeButtonCliked = {scheduleViewModel.timeDialogState = it})
+    if(scheduleViewModel.startTimeDialogState){
+        TimePickerComponent(timeState = scheduleViewModel.startTimeDialogState, onTimeButtonClicked = {scheduleViewModel.startTimeDialogState = it},
+            onTimeSelected = {scheduleViewModel.selectedStartTime = it})
+    }
+    if(scheduleViewModel.endTimeDialogState){
+        TimePickerComponent(timeState = scheduleViewModel.endTimeDialogState, onTimeButtonClicked = {scheduleViewModel.endTimeDialogState = it},
+            onTimeSelected = {scheduleViewModel.selectedEndTime = it})
     }
 
     Scaffold (
@@ -55,8 +62,9 @@ fun ExamScheduleScreen(scheduleViewModel: ScheduleViewModel, modifier: Modifier 
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())) {
             CurrentExamsPortal()
-            NewExamsPortal(dateState = scheduleViewModel.dateDialogState, onDateIconCliked = {scheduleViewModel.dateDialogState = it},
-                timeState = scheduleViewModel.timeDialogState, onTimeIconCliked = {scheduleViewModel.timeDialogState = it})
+            NewExamsPortal(scheduleViewModel = scheduleViewModel, dateState = scheduleViewModel.dateDialogState, onDateIconCliked = {scheduleViewModel.dateDialogState = it},
+                startTimeState = scheduleViewModel.startTimeDialogState, onStartTimeIconCliked = {scheduleViewModel.startTimeDialogState = it},
+                endTimeState = scheduleViewModel.endTimeDialogState, onEndTimeIconCliked = {scheduleViewModel.endTimeDialogState = it})
         }
     }
 }
@@ -85,27 +93,29 @@ fun CurrentExamsPortal(modifier: Modifier = Modifier){
 
 //Function for creating a new exam for a business
 @Composable
-fun NewExamsPortal(dateState: Boolean, onDateIconCliked: (Boolean) -> Unit,
-                   timeState: Boolean, onTimeIconCliked: (Boolean) -> Unit,
+fun NewExamsPortal(scheduleViewModel: ScheduleViewModel, dateState: Boolean,
+                   onDateIconCliked: (Boolean) -> Unit,
+                   startTimeState: Boolean, onStartTimeIconCliked: (Boolean) -> Unit,
+                   endTimeState: Boolean, onEndTimeIconCliked: (Boolean) -> Unit,
                    modifier: Modifier = Modifier){
     Column(modifier = modifier.padding(10.dp). fillMaxWidth(),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         Text("New Exam")
         Row {
-            OutlinedTextField(value = "", onValueChange = {/*TODO*/}, label ={ Text("Date")})
+            OutlinedTextField(value = scheduleViewModel.selectedDate ?: "", onValueChange = {/*TODO*/}, label ={ Text("Date")})
             IconButton(onClick = {onDateIconCliked(!dateState)}) {
                 Image(painter = painterResource(R.drawable.addition), contentDescription = "plus")
             }
         }
         Row {
-            OutlinedTextField(value = "", onValueChange = {/*TODO*/}, label ={ Text("Start Time")})
-            IconButton(onClick = {onTimeIconCliked(!timeState)}) {
+            OutlinedTextField(value = scheduleViewModel.selectedStartTime ?: "", onValueChange = {/*TODO*/}, label ={ Text("Start Time")})
+            IconButton(onClick = {onStartTimeIconCliked(!startTimeState)}) {
                 Image(painter = painterResource(R.drawable.addition), contentDescription = "plus")
             }
         }
         Row {
-            OutlinedTextField(value = "", onValueChange = {/*TODO*/}, label ={ Text("End Time")})
-            IconButton(onClick = {onTimeIconCliked(!timeState)}) {
+            OutlinedTextField(value = scheduleViewModel.selectedEndTime ?: "", onValueChange = {/*TODO*/}, label ={ Text("End Time")})
+            IconButton(onClick = {onEndTimeIconCliked(!endTimeState)}) {
                 Image(painter = painterResource(R.drawable.addition), contentDescription = "plus")
             }
         }
@@ -124,14 +134,30 @@ fun NewExamsPortal(dateState: Boolean, onDateIconCliked: (Boolean) -> Unit,
 //Picking a date for the first input field
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerComponent(dateState: Boolean, onDateButtonCliked: (Boolean) -> Unit, modifier: Modifier = Modifier){
+fun DatePickerComponent(dateState: Boolean, onDateButtonClicked: (Boolean) -> Unit,
+                        onDateSelected: (String?) -> Unit, modifier: Modifier = Modifier) {
     val datePickerState = rememberDatePickerState()
-
     Column(modifier = modifier.padding(10.dp)){
 
-        DatePickerDialog(onDismissRequest = { onDateButtonCliked(!dateState) },
-            confirmButton = { /*TODO*/ },
-            dismissButton = { /*TODO*/}) {
+        DatePickerDialog(onDismissRequest = { onDateButtonClicked(!dateState) },
+            confirmButton = {
+                TextButton(onClick = {
+                    val date = Date(datePickerState.selectedDateMillis!!)
+                    val formattedDate = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(date)
+                    onDateSelected(formattedDate.toString())
+                    onDateButtonClicked(!dateState)
+                }) {
+                    Text("Ok")
+                }
+
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    onDateButtonClicked(!dateState)
+                }) {
+                    Text("Dismiss")
+                }
+            }) {
             DatePicker(datePickerState)
         }
     }
@@ -140,36 +166,44 @@ fun DatePickerComponent(dateState: Boolean, onDateButtonCliked: (Boolean) -> Uni
 //Picking a time for the second  and third input field
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerComponent(timeState: Boolean, onTimeButtonCliked: (Boolean) -> Unit, modifier: Modifier = Modifier){
+fun TimePickerComponent(timeState: Boolean, onTimeButtonClicked: (Boolean) -> Unit, onTimeSelected: (String?) -> Unit, modifier: Modifier = Modifier){
     val currentTime = Calendar.getInstance()
 
     val timePickerState = rememberTimePickerState(
         initialHour = currentTime[Calendar.HOUR_OF_DAY],
         initialMinute = currentTime[Calendar.MINUTE],
-        is24Hour = true
+        is24Hour = false
     )
 
-    TimePickerDialog(onDismiss = { onTimeButtonCliked(!timeState) }) {
+    TimePickerDialog(timeState = timeState, onTimeButtonClicked = onTimeButtonClicked,
+        timePickerState = timePickerState, onTimeSelected = onTimeSelected) {
         TimePicker(state = timePickerState)
     }
 }
 
 //Dialog for picking a time
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerDialog(onDismiss: () -> Unit, content: @Composable () -> Unit){
+fun TimePickerDialog(timeState: Boolean, onTimeButtonClicked: (Boolean) -> Unit,
+                     timePickerState: TimePickerState, onTimeSelected: (String?) -> Unit, content: @Composable () -> Unit){
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {onTimeButtonClicked(!timeState)},
         dismissButton = {
-            TextButton(onClick = {/*TODO*/}){
+            TextButton(onClick = {onTimeButtonClicked(!timeState)}){
                 Text("Dismiss")
             }
         },
         confirmButton = {
-            TextButton(onClick = {/*TODO*/}){
+            TextButton(onClick = {
+                val time = timePickerState.hour
+                val minute = timePickerState.minute
+                val formattedTime = String.format("%02d:%02d", time, minute)
+                onTimeSelected(formattedTime)
+                onTimeButtonClicked(!timeState)}
+            ){
                 Text("Ok")
             }
         },
         text = { content() }
     )
-
 }
