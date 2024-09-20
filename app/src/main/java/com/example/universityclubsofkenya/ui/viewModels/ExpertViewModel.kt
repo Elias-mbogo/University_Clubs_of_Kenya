@@ -46,7 +46,7 @@ class ExpertViewModel(private val courseRepository: CourseRepository): ViewModel
         }
     }
 
-    suspend fun addChapters(chapter: String): Deferred<List<ChapterName>> = coroutineScope {
+    suspend fun addChapters(): Deferred<List<ChapterName>> = coroutineScope {
         viewModelScope.async {
             courseRepository.addAndGetChapters(ChapterName(chapter))
         }

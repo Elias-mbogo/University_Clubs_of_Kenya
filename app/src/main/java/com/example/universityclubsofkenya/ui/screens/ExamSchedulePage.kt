@@ -25,6 +25,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -54,6 +55,17 @@ fun ExamScheduleScreen(scheduleViewModel: ScheduleViewModel, modifier: Modifier 
             onTimeSelected = {scheduleViewModel.selectedEndTime = it})
     }
 
+    if(scheduleViewModel.examState){
+        LaunchedEffect(scheduleViewModel) {
+            scheduleViewModel.updateExamDetailsChanged(scheduleViewModel.postAndGetExamDetails().await())
+            scheduleViewModel.selectedDate = ""
+            scheduleViewModel.selectedStartTime = ""
+            scheduleViewModel.selectedEndTime = ""
+            scheduleViewModel.examName = ""
+            scheduleViewModel.examState = false
+        }
+    }
+
     Scaffold (
         topBar = { Group(onGroupButtonClicked = { /*TODO*/ }, groupName = "Kenyaweb") }
     ){innerPadding ->
@@ -62,9 +74,12 @@ fun ExamScheduleScreen(scheduleViewModel: ScheduleViewModel, modifier: Modifier 
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())) {
             CurrentExamsPortal()
-            NewExamsPortal(scheduleViewModel = scheduleViewModel, dateState = scheduleViewModel.dateDialogState, onDateIconCliked = {scheduleViewModel.dateDialogState = it},
-                startTimeState = scheduleViewModel.startTimeDialogState, onStartTimeIconCliked = {scheduleViewModel.startTimeDialogState = it},
-                endTimeState = scheduleViewModel.endTimeDialogState, onEndTimeIconCliked = {scheduleViewModel.endTimeDialogState = it})
+            NewExamsPortal(scheduleViewModel = scheduleViewModel,
+                dateState = scheduleViewModel.dateDialogState, onDateIconClicked = {scheduleViewModel.dateDialogState = it},
+                startTimeState = scheduleViewModel.startTimeDialogState, onStartTimeIconClicked = {scheduleViewModel.startTimeDialogState = it},
+                endTimeState = scheduleViewModel.endTimeDialogState, onEndTimeIconClicked = {scheduleViewModel.endTimeDialogState = it},
+                examName = scheduleViewModel.examName, onExamNameChanged = {scheduleViewModel.updateExamName(it)},
+                examState = scheduleViewModel.examState, onExamButtonClicked = {scheduleViewModel.examState = it})
         }
     }
 }
@@ -93,35 +108,37 @@ fun CurrentExamsPortal(modifier: Modifier = Modifier){
 
 //Function for creating a new exam for a business
 @Composable
-fun NewExamsPortal(scheduleViewModel: ScheduleViewModel, dateState: Boolean,
-                   onDateIconCliked: (Boolean) -> Unit,
-                   startTimeState: Boolean, onStartTimeIconCliked: (Boolean) -> Unit,
-                   endTimeState: Boolean, onEndTimeIconCliked: (Boolean) -> Unit,
+fun NewExamsPortal(scheduleViewModel: ScheduleViewModel,
+                   dateState: Boolean, onDateIconClicked: (Boolean) -> Unit,
+                   startTimeState: Boolean, onStartTimeIconClicked: (Boolean) -> Unit,
+                   endTimeState: Boolean, onEndTimeIconClicked: (Boolean) -> Unit,
+                   examName: String, onExamNameChanged: (String) -> Unit,
+                   examState: Boolean, onExamButtonClicked: (Boolean) -> Unit,
                    modifier: Modifier = Modifier){
     Column(modifier = modifier.padding(10.dp). fillMaxWidth(),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         Text("New Exam")
         Row {
             OutlinedTextField(value = scheduleViewModel.selectedDate ?: "", onValueChange = {/*TODO*/}, label ={ Text("Date")})
-            IconButton(onClick = {onDateIconCliked(!dateState)}) {
+            IconButton(onClick = {onDateIconClicked(!dateState)}) {
                 Image(painter = painterResource(R.drawable.addition), contentDescription = "plus")
             }
         }
         Row {
             OutlinedTextField(value = scheduleViewModel.selectedStartTime ?: "", onValueChange = {/*TODO*/}, label ={ Text("Start Time")})
-            IconButton(onClick = {onStartTimeIconCliked(!startTimeState)}) {
+            IconButton(onClick = {onStartTimeIconClicked(!startTimeState)}) {
                 Image(painter = painterResource(R.drawable.addition), contentDescription = "plus")
             }
         }
         Row {
             OutlinedTextField(value = scheduleViewModel.selectedEndTime ?: "", onValueChange = {/*TODO*/}, label ={ Text("End Time")})
-            IconButton(onClick = {onEndTimeIconCliked(!endTimeState)}) {
+            IconButton(onClick = {onEndTimeIconClicked(!endTimeState)}) {
                 Image(painter = painterResource(R.drawable.addition), contentDescription = "plus")
             }
         }
         Row {
-            OutlinedTextField(value = "", onValueChange = {/*TODO*/}, label ={ Text("Exam Name")})
-            IconButton(onClick = {/*TODO*/}) {
+            OutlinedTextField(value = examName, onValueChange = onExamNameChanged, label ={ Text("Exam Name")})
+            IconButton(onClick = {onExamButtonClicked(!examState)}) {
                 Image(painter = painterResource(R.drawable.addition), contentDescription = "plus")
             }
         }

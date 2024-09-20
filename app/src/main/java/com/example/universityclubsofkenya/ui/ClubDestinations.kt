@@ -85,7 +85,7 @@ fun ClubApp(modifier: Modifier = Modifier,
             expertViewModel: ExpertViewModel = viewModel(factory = ExpertViewModel.Factory),
             studentViewModel: StudentViewModel = viewModel(factory = StudentViewModel.Factory),
             groupViewModel: GroupViewModel = viewModel(factory = GroupViewModel.Factory),
-            scheduleViewModel: ScheduleViewModel = viewModel()
+            scheduleViewModel: ScheduleViewModel = viewModel(factory = ScheduleViewModel.Factory)
 ){
     val navController = rememberNavController()
 

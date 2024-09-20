@@ -66,10 +66,11 @@ fun Business(groupViewModel: GroupViewModel, navController: NavController, exper
 
             if(expertViewModel.chapterDoneState){
                 LaunchedEffect(expertViewModel) {
-                    expertViewModel.updateChaptersChanged(expertViewModel.addChapters(expertViewModel.chapter).await())
+                    expertViewModel.updateChaptersChanged(expertViewModel.addChapters().await())
                     expertViewModel.chapterDoneState = false
+                    expertViewModel.newChapterState = false
                 }
-                expertViewModel.newChapterState = false
+
             }
         }
 
